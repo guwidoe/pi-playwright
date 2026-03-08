@@ -1,9 +1,17 @@
 {
   "name": "pi-playwright",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Playwright browser automation skill package for pi",
   "type": "module",
   "license": "MIT",
+  "homepage": "https://github.com/guwidoe/pi-playwright#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/guwidoe/pi-playwright.git"
+  },
+  "bugs": {
+    "url": "https://github.com/guwidoe/pi-playwright/issues"
+  },
   "keywords": [
     "pi-package",
     "playwright",
@@ -18,9 +26,7 @@
   "files": [
     "skills",
     "README.md",
-    "LICENSE",
-    "AGENTS.md",
-    "CLAUDE.md"
+    "LICENSE"
   ],
   "scripts": {
     "setup": "npx playwright install chromium",

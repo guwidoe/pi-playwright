@@ -2,6 +2,8 @@
 
 Playwright browser automation skill package for [pi](https://github.com/mariozechner/pi-coding-agent).
 
+It adds the `playwright-browser` skill so pi can open pages, inspect the DOM, click, fill forms, capture screenshots, watch console/network output, and save auth state through the local `@playwright/cli`.
+
 CLI-first. Token-efficient. Built for coding agents.
 
 ## Included skill
@@ -10,38 +12,60 @@ CLI-first. Token-efficient. Built for coding agents.
 
 ## Why
 
-Pi is optimized for bash, code, and skills. This package follows that model:
+This package keeps browser automation simple and inspectable:
 
-- small skill surface
-- local CLI execution
+- local CLI execution instead of a large remote tool surface
 - project-scoped browser sessions
-- minimal context overhead vs large MCP tool schemas
+- artifact-friendly workflows for screenshots, PDFs, and snapshots
+- minimal context overhead for coding agents
 
 ## Install
 
-### Local development
-
-```bash
-cd ~/ralph-repos/pi-playwright
-npm install
-npm run setup
-```
-
-Use from pi without publishing:
-
-```bash
-pi install ~/ralph-repos/pi-playwright
-```
-
-### After publishing
+### Install into pi
 
 ```bash
 pi install npm:pi-playwright
 ```
 
+To install only for the current project:
+
+```bash
+pi install -l npm:pi-playwright
+```
+
+Pi installs the package dependencies automatically.
+
+If your machine does not already have a compatible browser available, install Chromium once:
+
+```bash
+npx playwright install chromium
+```
+
+## Add to pi config
+
+Global config (`~/.pi/agent/settings.json`):
+
+```json
+{
+  "packages": ["pi-playwright"]
+}
+```
+
+Explicit npm source:
+
+```json
+{
+  "packages": ["npm:pi-playwright"]
+}
+```
+
+If you want to pin a specific release, use `npm:pi-playwright@<version>`.
+
+Project-local config (`.pi/settings.json`) works the same way.
+
 ## Usage
 
-Ask pi to use the skill naturally, or force it:
+Ask pi to use the skill naturally, or force it explicitly:
 
 ```bash
 /skill:playwright-browser
@@ -63,30 +87,41 @@ Wrapper scripts live in `skills/playwright-browser/scripts/`:
 
 Default behavior:
 
-- session derived from current git repo or cwd
-- artifacts under `/tmp/pi-playwright/<session>/`
-- uses local package dependency, not global install
+- session derived from the current git repo or cwd
+- artifacts stored under `/tmp/pi-playwright/<session>/`
+- uses the package-local Playwright CLI dependency
 
-Override session:
+Override the session explicitly if needed:
 
 ```bash
 PLAYWRIGHT_CLI_SESSION=my-session node skills/playwright-browser/scripts/pw.js open https://example.com
 ```
 
-## Dev
+## Contributing
+
+Issues and pull requests are welcome.
+
+- Repository: https://github.com/guwidoe/pi-playwright
+- Issue tracker: https://github.com/guwidoe/pi-playwright/issues
+
+Local development:
 
 ```bash
+git clone https://github.com/guwidoe/pi-playwright.git
+cd pi-playwright
 npm install
 npm run setup
 npm test
 npm run smoke
 ```
 
-## Publish
+To try the local checkout with pi:
 
 ```bash
-npm publish
+pi install .
 ```
+
+See `CONTRIBUTING.md` for collaboration and local development notes.
 
 ## License
 

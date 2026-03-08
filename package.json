@@ -1,0 +1,39 @@
+{
+  "name": "pi-playwright",
+  "version": "0.1.0",
+  "description": "Playwright browser automation skill package for pi",
+  "type": "module",
+  "license": "MIT",
+  "keywords": [
+    "pi-package",
+    "playwright",
+    "browser",
+    "browser-automation",
+    "agent-skills",
+    "pi"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "files": [
+    "skills",
+    "README.md",
+    "LICENSE",
+    "AGENTS.md",
+    "CLAUDE.md"
+  ],
+  "scripts": {
+    "setup": "npx playwright install chromium",
+    "test": "node --test test/*.test.js",
+    "smoke": "node ./test/smoke.js",
+    "check": "npm test && npm run smoke"
+  },
+  "dependencies": {
+    "@playwright/cli": "^0.1.1"
+  },
+  "pi": {
+    "skills": [
+      "./skills"
+    ]
+  }
+}

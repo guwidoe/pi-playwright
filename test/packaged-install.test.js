@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { cpSync, mkdirSync, mkdtempSync, readdirSync, renameSync, rmSync } from "node:fs";
+import { cpSync, mkdirSync, mkdtempSync, readdirSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -31,8 +31,12 @@ function createHoistedInstall() {
   });
   assert.equal(pack.status, 0, `npm pack failed: ${pack.stderr}`);
   const tarballName = pack.stdout.trim().split("\n").at(-1).trim();
+  // Copy rather than rename: the temp dir can be on a different drive to the
+  // checkout (D: vs C: on Windows runners), and rename fails with EXDEV.
+  const packedTarball = join(projectRoot, tarballName);
   const tarball = join(root, tarballName);
-  renameSync(join(projectRoot, tarballName), tarball);
+  cpSync(packedTarball, tarball);
+  rmSync(packedTarball, { force: true });
 
   const packageDir = join(nodeModules, "pi-playwright");
   mkdirSync(packageDir, { recursive: true });

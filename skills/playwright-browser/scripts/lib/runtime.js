@@ -1,5 +1,5 @@
 import { execFileSync, spawnSync } from "node:child_process";
-import { mkdirSync } from "node:fs";
+import { existsSync, mkdirSync } from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
@@ -11,9 +11,34 @@ export function getPackageRoot() {
   return packageRoot;
 }
 
-export function resolvePlaywrightCliBin() {
+export function findCliBin(startDir) {
   const platformBin = process.platform === "win32" ? "playwright-cli.cmd" : "playwright-cli";
-  return join(packageRoot, "node_modules", ".bin", platformBin);
+  // Walk up from startDir: the published package does not include its own
+  // node_modules, so the CLI bin may live in a parent node_modules/.bin.
+  let dir = resolve(startDir);
+  while (true) {
+    const candidate = join(dir, "node_modules", ".bin", platformBin);
+    if (existsSync(candidate)) {
+      return candidate;
+    }
+    const parent = dirname(dir);
+    if (parent === dir) {
+      return null;
+    }
+    dir = parent;
+  }
+}
+
+export function resolvePlaywrightCliBin() {
+  return findCliBin(packageRoot) ?? join(packageRoot, "node_modules", ".bin", process.platform === "win32" ? "playwright-cli.cmd" : "playwright-cli");
+}
+
+/**
+ * Windows .cmd/.bat shims cannot be exec'd directly by child_process; they
+ * must be launched through a shell. Returns the spawn option to use.
+ */
+export function cliShellOption(bin) {
+  return bin.endsWith(".cmd") || bin.endsWith(".bat");
 }
 
 export function resolveGitRoot(cwd = process.cwd()) {
@@ -83,7 +108,13 @@ export function runPlaywrightCli(args, options = {}) {
     cwd: options.cwd || process.cwd(),
     env: { ...process.env, ...(options.env || {}) },
     stdio: "inherit",
+    shell: cliShellOption(bin),
   });
+
+  if (result.error) {
+    console.error(`pi-playwright: failed to launch ${bin}: ${result.error.message}`);
+    return 1;
+  }
 
   if (typeof result.status === "number") {
     return result.status;

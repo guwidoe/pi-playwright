@@ -33,6 +33,31 @@ Print that directory with:
 node "$SKILL_DIR/scripts/artifact-dir.js"
 ```
 
+## Browser selection
+
+`open` defaults to the bundled Chromium build that `npm run setup` installs, so it
+works without a separate Google Chrome installation. Precedence:
+
+1. an explicit `--browser=<value>` on the call
+2. the `PI_PLAYWRIGHT_BROWSER` env var
+3. `chromium` (bundled build)
+
+Accepted values: `chromium`, `chrome`, `msedge`, `firefox`, `webkit`. Note that
+`chromium` works but is missing from upstream `playwright-cli --help open`.
+
+```bash
+node "$SKILL_DIR/scripts/pw.js" open http://localhost:3000 --browser=msedge
+PI_PLAYWRIGHT_BROWSER=msedge node "$SKILL_DIR/scripts/pw.js" open http://localhost:3000
+```
+
+Every value needs that browser present on the machine. If a call reports a browser
+is not installed, install it once:
+
+```bash
+npx playwright install chromium   # the default; same as `npm run setup`
+npx playwright install firefox webkit
+```
+
 ## Useful commands
 
 ### Open page

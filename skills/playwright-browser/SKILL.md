@@ -28,6 +28,8 @@ Use local `@playwright/cli` through the wrapper scripts in this skill.
 4. Get element refs with `snapshot` before using `click`, `fill`, `select`, `check`, etc.
 5. Use `run-code` only when the standard CLI primitives are not enough.
 6. Use `--headed` when the user wants to watch or debug visually; otherwise default headless is fine.
+7. `open` uses the bundled Chromium that `npm run setup` installs. Override per call with
+   `--browser=<chromium|chrome|msedge|firefox|webkit>`, or for the whole machine with `PI_PLAYWRIGHT_BROWSER`.
 
 ## Setup
 
@@ -38,7 +40,8 @@ cd "$SKILL_DIR/../.." && npm install
 cd "$SKILL_DIR/../.." && npm run setup
 ```
 
-If Chrome is already available, `npm install` is often enough. `npm run setup` installs bundled Chromium for reliability.
+`npm run setup` installs the bundled Chromium build, which is what `open` uses by default.
+No separate Google Chrome installation is needed.
 
 ## First steps for a browser task
 
@@ -64,6 +67,7 @@ Default: `/tmp/pi-playwright/<session>/`
 ```bash
 node "$SKILL_DIR/scripts/pw.js" open http://localhost:3000
 node "$SKILL_DIR/scripts/pw.js" open http://localhost:3000 --headed
+node "$SKILL_DIR/scripts/pw.js" open http://localhost:3000 --browser=msedge
 ```
 
 ## Core workflow

@@ -35,11 +35,14 @@ pi install -l npm:pi-playwright
 
 Pi installs the package dependencies automatically.
 
-If your machine does not already have a compatible browser available, install Chromium once:
+Install the bundled Chromium build once:
 
 ```bash
 npx playwright install chromium
 ```
+
+This is the browser `open` uses by default; a separate Google Chrome installation
+is not required.
 
 ## Add to pi config
 
@@ -89,12 +92,21 @@ Default behavior:
 
 - session derived from the current git repo or cwd
 - artifacts stored under `/tmp/pi-playwright/<session>/`
-- uses the package-local Playwright CLI dependency
+- resolves `@playwright/cli` through Node, so nested and hoisted installs both work
+- `open` uses the bundled Chromium build installed by `npx playwright install chromium`
 
-Override the session explicitly if needed:
+Environment overrides:
+
+| Variable | Effect |
+| --- | --- |
+| `PLAYWRIGHT_CLI_SESSION` | session name (default: git repo or cwd basename) |
+| `PI_PLAYWRIGHT_ARTIFACTS` | artifact directory (default: `/tmp/pi-playwright/<session>/`) |
+| `PI_PLAYWRIGHT_BROWSER` | browser for `open`: `chromium`, `chrome`, `msedge`, `firefox`, `webkit` (default: `chromium`) |
 
 ```bash
 PLAYWRIGHT_CLI_SESSION=my-session node skills/playwright-browser/scripts/pw.js open https://example.com
+PI_PLAYWRIGHT_BROWSER=msedge node skills/playwright-browser/scripts/pw.js open https://example.com
+node skills/playwright-browser/scripts/pw.js open https://example.com --browser=firefox
 ```
 
 ## Contributing

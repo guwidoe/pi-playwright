@@ -5,9 +5,45 @@ on:
   pull_request:
 
 jobs:
+  # Unit tests + the packaged-install test, which builds the real published
+  # tarball in a hoisted node_modules layout. Windows and the matrix are not
+  # optional here: issues #1, #2 and #4 were all invisible to an ubuntu-only
+  # run that only ever exercised this repo's own nested node_modules.
   test:
-    runs-on: ubuntu-latest
+    name: test (${{ matrix.os }}, node ${{ matrix.node }})
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node: [20, 22, 24]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+  # End-to-end against a real browser, exercising the default browser selection.
+  smoke:
+    name: smoke (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
 
     steps:
       - name: Checkout
@@ -25,5 +61,5 @@ jobs:
       - name: Install Playwright browser
         run: npm run setup
 
-      - name: Run checks
-        run: npm run check
+      - name: Run smoke test
+        run: npm run smoke

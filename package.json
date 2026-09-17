@@ -30,7 +30,7 @@
   ],
   "scripts": {
     "setup": "npx playwright install chromium",
-    "test": "node --test test/*.test.js",
+    "test": "node --test test/runtime.test.js test/packaged-install.test.js",
     "smoke": "node ./test/smoke.js",
     "check": "npm test && npm run smoke"
   },

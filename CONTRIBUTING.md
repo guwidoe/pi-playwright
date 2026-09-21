@@ -26,4 +26,4 @@ pi install .
 
 ## Notes for maintainers
 
-Publishing new versions is maintainer-only and requires npm access to the package.
+Publishing new versions is maintainer-only and requires npm access to the package. See [Publishing to npm from WSL](docs/npm-publishing-wsl.md) for browser authentication, passkeys, and release steps.
